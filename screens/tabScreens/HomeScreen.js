@@ -27,10 +27,6 @@ import { onValue, ref, off } from "firebase/database";
 import { db } from "@services/firebase/firebaseConfig.js";
 
 const HomeScreen = () => {
-  // Time Constants
-  const realTime = "8:00 PM";
-  const forecastTime = "9:00 PM";
-
   const { phValue, turbidityValue } = useGaugeData("GAUGE_VALUE");
 
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
@@ -95,6 +91,28 @@ const HomeScreen = () => {
     day: "numeric",
   };
   const formattedDate = currentTime.toLocaleDateString(undefined, dateOptions);
+
+  function formatTime(date) {
+    let currentHour = date.getHours();
+    let currentMinute = date.getMinutes();
+    let ampm = currentHour >= 12 ? "PM" : "AM";
+
+    currentHour = currentHour % 12;
+    currentHour = currentHour ? currentHour : 12;
+
+    currentHour = currentHour < 10 ? "0" + currentHour : currentHour;
+    currentMinute = currentMinute < 10 ? "0" + currentMinute : currentMinute;
+
+    return `${currentHour}:${currentMinute} ${ampm}`;
+  }
+
+  const timeNow = new Date();
+
+  const realTime = formatTime(timeNow);
+
+  let oneHourAhead = new Date(timeNow.getTime() + 60 * 60 * 1000);
+
+  const forecastTime = formatTime(oneHourAhead);
 
   useEffect(() => {
     let alert = false;
